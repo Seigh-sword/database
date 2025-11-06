@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Seigh JSON Editor</title>
+</head>
+<body style="background:#0f172a;color:#e6eef8;font-family:sans-serif;padding:20px;">
+  <h1>Database Editor</h1>
+  <button onclick="loadFile()">🔁 Load</button>
+  <button onclick="saveFile()">💾 Save</button>
+  <button onclick="pretty()">✨ Prettify</button>
+  <br><br>
+  <textarea id="box" style="width:90%;height:60vh;font-family:monospace;"></textarea>
+  <script>
+    let sha = null;
+    async function loadFile() {
+      const res = await fetch("http://localhost:3000/file");
+      const data = await res.json();
+      document.getElementById("box").value = data.content;
+      sha = data.sha;
+    }
+    async function saveFile() {
+      const content = document.getElementById("box").value;
+      const res = await fetch("http://localhost:3000/file", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content, sha }),
+      });
+      alert("✅ Saved to GitHub!");
+    }
+    function pretty() {
+      try {
+        const j = JSON.parse(document.getElementById("box").value);
+        document.getElementById("box").value = JSON.stringify(j, null, 2);
+      } catch {
+        alert("❌ Invalid JSON");
+      }
+    }
+  </script>
+</body>
+</html>
